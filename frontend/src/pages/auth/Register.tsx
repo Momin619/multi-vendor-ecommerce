@@ -1,42 +1,34 @@
 import {
   Link,
-  useNavigate,
+  Navigate,
 } from "react-router-dom";
 
-import {
-  useEffect,
-} from "react";
-
-import {
-  toast,
-} from "react-hot-toast";
-
 import RegisterForm from "../../components/auth/RegisterForm";
+import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import { useAuth } from "../../hooks/useAuth";
 
-/**
- * Registration page.
- */
 const Register = () => {
   const {
     isAuthenticated,
     isLoading,
   } = useAuth();
 
-  const navigate = useNavigate();
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-100">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
-  useEffect(() => {
-    if (!isLoading && isAuthenticated) {
-      toast.success("You are already logged in.");
-      navigate("/dashboard", {
-        replace: true,
-      });
-    }
-  }, [
-    isAuthenticated,
-    isLoading,
-    navigate,
-  ]);
+  if (isAuthenticated) {
+    return (
+      <Navigate
+        to="/dashboard"
+        replace
+      />
+    );
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4 py-10">

@@ -2,10 +2,12 @@ import axios, {
   type AxiosError,
   type InternalAxiosRequestConfig,
 } from "axios";
-
+import { notifySessionExpired } from "../auth/session";
 /**
- * Extended request config.
- * _retry stops us from retrying the same request twice.
+ * Extended Axios request configuration.
+ *
+ * `_retry` prevents an original request from being
+ * retried more than once.
  */
 interface RetryableRequestConfig
   extends InternalAxiosRequestConfig {
@@ -13,16 +15,22 @@ interface RetryableRequestConfig
 }
 
 /**
- * Axios instance used for every API call.
+ * Shape of errors returned by our backend.
+ */
+interface ApiErrorResponse {
+  success: boolean;
+  message: string;
+  errorCode?: string;
+}
+
+/**
+ * Axios instance used for all API requests.
  */
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 
   /**
-   * VERY IMPORTANT.
-   * Without this, the browser will NOT send or
-   * store the accessToken / refreshToken cookies
-   * on requests to a different port/origin.
+   * Required because authentication uses HTTP-only cookies.
    */
   withCredentials: true,
 
@@ -36,24 +44,20 @@ const api = axios.create({
  *
  * Flow:
  *
- * Any request fails with 401 (not an /auth/* route, not already retried)
- *        ↓
- * call /auth/refresh (browser sends refreshToken cookie automatically)
- *        ↓
- * backend sets new accessToken + refreshToken cookies
- *        ↓
- * retry the original request (browser sends the new accessToken cookie)
- *
- * NOTE: We deliberately do NOT check a specific `errorCode` here.
- * Requiring an exact string like "AUTH_TOKEN_EXPIRED" is fragile —
- * if the backend ever sends a 401 without that exact code, refresh
- * never happens and the user gets logged out for no real reason.
- * Any 401 from a non-auth endpoint is treated as "try refreshing once."
+ * API request
+ *     ↓
+ * Access token expired
+ *     ↓
+ * POST /auth/refresh
+ *     ↓
+ * New tokens stored in cookies
+ *     ↓
+ * Retry original request
  */
 api.interceptors.response.use(
   (response) => response,
 
-  async (error: AxiosError) => {
+  async (error: AxiosError<ApiErrorResponse>) => {
     const originalRequest =
       error.config as RetryableRequestConfig | undefined;
 
@@ -63,43 +67,67 @@ api.interceptors.response.use(
 
     const requestUrl = originalRequest.url ?? "";
 
-    /**
-     * Never attempt a refresh for auth endpoints themselves.
-     * Otherwise a failed /auth/refresh could try to refresh itself
-     * forever (infinite loop).
-     */
     const isAuthEndpoint =
       requestUrl.includes("/auth/login") ||
       requestUrl.includes("/auth/register") ||
-      requestUrl.includes("/auth/refresh") ||
-      requestUrl.includes("/auth/logout");
+      requestUrl.includes("/auth/refresh");
 
     const status = error.response?.status;
 
-    /**
-     * Only try to refresh when:
-     * - it's a 401 (unauthorized)
-     * - it's not an auth endpoint
-     * - we haven't already retried this exact request
+    const errorCode =
+      error.response?.data?.errorCode;
+
+    const isAccessTokenExpired = "AUTH_ACCESS_TOKEN_EXPIRED";
+
+    /*
+     * Only attempt refresh when the access token
+     * specifically expired.
      */
-    if (isAuthEndpoint || status !== 401 || originalRequest._retry) {
+    if (
+      isAuthEndpoint ||
+      status !== 401 ||
+      !isAccessTokenExpired ||
+      originalRequest._retry
+    ) {
       return Promise.reject(error);
     }
 
     originalRequest._retry = true;
 
     try {
-      await api.post("/auth/refresh");
-      return api(originalRequest);
-    } catch (refreshError) {
-      /**
-       * Refresh token is invalid/expired too.
-       * The caller (AuthContext, etc.) will treat this
-       * as "not logged in".
+      /*
+       * Try to refresh the tokens.
        */
+      await api.post("/auth/refresh");
+
+      /*
+       * Refresh succeeded.
+       *
+       * Backend has now placed new tokens
+       * into the HTTP-only cookies.
+       *
+       * Retry the original request.
+       */
+      return api(originalRequest);
+
+    } catch (refreshError) {
+
+      /*
+       * Refresh failed.
+       *
+       * This normally means:
+       *
+       * AUTH_REFRESH_TOKEN_EXPIRED
+       * OR
+       * AUTH_REFRESH_TOKEN_INVALID
+       *
+       * The user's session is no longer valid.
+       */
+      notifySessionExpired();
+
       return Promise.reject(refreshError);
     }
-  },
+  }
 );
 
 export default api;

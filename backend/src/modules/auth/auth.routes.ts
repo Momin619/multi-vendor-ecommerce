@@ -63,6 +63,7 @@ authRouter.post(
  */
 authRouter.post(
   "/logout",
+  authenticate,
   logout,
 );
 

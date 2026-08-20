@@ -25,18 +25,12 @@ import type {
  *
  * means only sellers can continue.
  */
-export const authorize = (
-  ...allowedRoles: UserRole[]
-) => {
+export const authorize = (...allowedRoles: UserRole[]) => {
   return (
     req: Request,
     _res: Response,
-    next: NextFunction,
+    next: NextFunction
   ): void => {
-    /**
-     * authenticate middleware should have already
-     * attached the authenticated user to req.user.
-     */
     if (!req.user) {
       next(
         new AppError(
@@ -45,29 +39,21 @@ export const authorize = (
           ERROR_CODES.AUTH_UNAUTHORIZED,
         ),
       );
-
       return;
     }
 
-    /**
-     * Check whether the authenticated user's role
-     * is allowed for this route.
-     */
+    
     if (!allowedRoles.includes(req.user.role)) {
       next(
         new AppError(
           "You are not authorized to access this resource",
           403,
-          ERROR_CODES.AUTH_FORBIDDEN,
-        ),
+          ERROR_CODES.AUTH_FORBIDDEN
+        )
       );
-
       return;
     }
 
-    /**
-     * User has the correct role.
-     */
     next();
   };
 };

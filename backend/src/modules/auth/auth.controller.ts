@@ -26,47 +26,12 @@ export const register = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const result = await registerUser(req.body);
-
-    /**
-     * Store refresh token in an HTTP-only cookie.
-     *
-     * JavaScript running in the browser cannot access this cookie.
-     */
-    res.cookie(
-      "refreshToken",
-      result.refreshToken,
-      {
-        httpOnly: true,
-
-        secure:
-          process.env.NODE_ENV === "production",
-
-        sameSite:
-          process.env.NODE_ENV === "production"
-            ? "strict"
-            : "lax",
-
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-
-        path: "/api/auth",
-      },
-    );
+    await registerUser(req.body);
 
     sendSuccess(
       res,
       "Registration successful",
-      {
-        user: result.user,
-
-        /**
-         * Access token is returned to the frontend.
-         *
-         * The refresh token is intentionally NOT returned
-         * in the response body.
-         */
-        accessToken: result.accessToken,
-      },
+      null,
       201,
     );
   } catch (error) {
@@ -149,7 +114,7 @@ export const refresh = async (
       throw new AppError(
         "Refresh token not found",
         401,
-        ERROR_CODES.AUTH_REFRESH_TOKEN_INVALID,
+        ERROR_CODES.AUTH_REFRESH_TOKEN_MISSING,
       );
     }
 
@@ -158,9 +123,7 @@ export const refresh = async (
      * generate both new tokens.
      */
     const result =
-      await refreshAccessToken({
-        refreshToken,
-      });
+      await refreshAccessToken(refreshToken);
 
     /**
      * Replace the old access token.

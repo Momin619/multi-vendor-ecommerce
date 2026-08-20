@@ -21,6 +21,11 @@ import type {
   User,
 } from "../types/user.types";
 
+import {
+  setSessionExpiredHandler,
+  clearSessionExpiredHandler,
+} from "../auth/session";
+
 interface AuthContextValue {
   user: User | null;
   isAuthenticated: boolean;
@@ -85,6 +90,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     };
   }, []);
 
+useEffect(() => {
+  const handleSessionExpired = () => {
+    setUser(null);
+  };
+
+  setSessionExpiredHandler(handleSessionExpired);
+
+  return () => {
+    clearSessionExpiredHandler();
+  };
+}, []);
+
   const login = async (data: LoginData): Promise<void> => {
     // Backend validates credentials and sets both cookies.
     const response = await loginApi(data);
@@ -93,10 +110,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const register = async (data: RegisterData): Promise<void> => {
     // Backend creates the user and sets both cookies.
-    const response = await registerApi(data);
-    setUser(response.data.user);
+   await registerApi(data);
   };
-
+  
   const logout = async (): Promise<void> => {
     try {
       await logoutApi(); // backend clears both cookies

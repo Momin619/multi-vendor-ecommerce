@@ -17,7 +17,6 @@ const Login = () => {
     isLoading,
   } = useAuth();
 
-  const location = useLocation();
 
   if (isLoading) {
     return (

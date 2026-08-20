@@ -1,23 +1,11 @@
-import {
-  useForm,
-} from "react-hook-form";
+import { useForm } from "react-hook-form";
+import { useLocation } from "react-router-dom";
 
-import {
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
+import { useRedirect } from "../../hooks/useRedirect";
+import { getErrorMessage } from "../../api/error.utils";
 
-import {
-  useAuth,
-} from "../../hooks/useAuth";
-
-import {
-  getErrorMessage,
-} from "../../api/error.utils";
-
-import type {
-  LoginData,
-} from "../../types/auth.types";
+import type { LoginData } from "../../types/auth.types";
 
 import Button from "../ui/Button";
 import Input from "../ui/Input";
@@ -31,17 +19,13 @@ interface LoginLocationState {
 }
 
 const LoginForm = () => {
-  const {
-    login,
-  } = useAuth();
+  const { login } = useAuth();
+  const { redirectTo } = useRedirect();
 
-  const navigate = useNavigate();
   const location = useLocation();
 
   const state =
-    location.state as
-      | LoginLocationState
-      | null;
+    location.state as LoginLocationState | null;
 
   const from = state?.from;
 
@@ -55,26 +39,15 @@ const LoginForm = () => {
     },
   } = useForm<LoginData>();
 
-  const onSubmit = async (
-    data: LoginData,
-  ) => {
+  const onSubmit = async (data: LoginData) => {
     try {
       await login(data);
 
-      /**
-       * If the user originally requested
-       * a protected page, return there.
-       *
-       * Otherwise use /dashboard.
-       */
-      const destination =
-        from?.pathname
-          ? `${from.pathname}${from.search ?? ""}${from.hash ?? ""}`
-          : "/dashboard";
+      const destination = from?.pathname
+        ? `${from.pathname}${from.search ?? ""}${from.hash ?? ""}`
+        : "/dashboard";
 
-      navigate(destination, {
-        replace: true,
-      });
+      redirectTo(destination, true);
     } catch (error) {
       setError("root", {
         message: getErrorMessage(error),

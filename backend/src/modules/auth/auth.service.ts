@@ -23,7 +23,6 @@ import type {
 
 import type {
   LoginInput,
-  RefreshTokenInput,
   RegisterInput,
 } from "./auth.schemas.js";
 
@@ -52,12 +51,9 @@ const mapUser = (user: {
  */
 export const registerUser = async (
   input: RegisterInput,
-): Promise<AuthResult> => {
+): Promise<void> => {
   const email = input.email.toLowerCase();
 
-  /**
-   * Check if the email already exists.
-   */
   const existingUser = await pool.query(
     `
       SELECT id
@@ -75,19 +71,11 @@ export const registerUser = async (
     );
   }
 
-  /**
-   * Hash the password.
-   *
-   * We NEVER store the original password.
-   */
   const passwordHash = await hashPassword(
     input.password,
   );
 
-  /**
-   * Insert the new user.
-   */
-  const result = await pool.query(
+  await pool.query(
     `
       INSERT INTO users (
         name,
@@ -96,11 +84,6 @@ export const registerUser = async (
         role
       )
       VALUES ($1, $2, $3, $4)
-      RETURNING
-        id,
-        name,
-        email,
-        role
     `,
     [
       input.name,
@@ -109,26 +92,6 @@ export const registerUser = async (
       input.role,
     ],
   );
-
-  const user = mapUser(result.rows[0]);
-
-  /**
-   * Generate authentication tokens.
-   */
-  const accessToken = generateAccessToken(
-    user.id,
-    user.role,
-  );
-
-  const refreshToken = generateRefreshToken(
-    user.id,
-  );
-
-  return {
-    user,
-    accessToken,
-    refreshToken,
-  };
 };
 
 /**
@@ -173,7 +136,7 @@ export const loginUser = async (
   }
 
   const databaseUser = result.rows[0];
-
+console.log("databaseUser", databaseUser);
   /**
    * Compare the supplied password with the stored hash.
    */
@@ -191,7 +154,7 @@ export const loginUser = async (
   }
 
   const user = mapUser(databaseUser);
-
+console.log("user", user);
   const accessToken = generateAccessToken(
     user.id,
     user.role,
@@ -215,28 +178,13 @@ export const loginUser = async (
  * This implements refresh-token rotation.
  */
 export const refreshAccessToken = async (
-  input: RefreshTokenInput,
+  input: string,
 ): Promise<{
   accessToken: string;
   refreshToken: string;
 }> => {
-  /**
-   * Verify the existing refresh token.
-   *
-   * This checks:
-   *
-   * - signature
-   * - expiration
-   * - token structure
-   */
-  const payload = verifyRefreshToken(
-    input.refreshToken,
-  );
+  const payload = verifyRefreshToken(input);
 
-  /**
-   * Make sure the supplied token is actually
-   * a refresh token and not an access token.
-   */
   if (payload.type !== "refresh") {
     throw new AppError(
       "Invalid refresh token",
@@ -245,13 +193,6 @@ export const refreshAccessToken = async (
     );
   }
 
-  /**
-   * Make sure the user still exists.
-   *
-   * Since refresh tokens are not stored in the database,
-   * this is our server-side check that the account
-   * is still valid.
-   */
   const result = await pool.query(
     `
       SELECT
@@ -273,19 +214,11 @@ export const refreshAccessToken = async (
 
   const user = result.rows[0];
 
-  /**
-   * Generate a NEW access token.
-   */
   const accessToken = generateAccessToken(
     user.id,
     user.role,
   );
 
-  /**
-   * Generate a NEW refresh token.
-   *
-   * This is refresh-token rotation.
-   */
   const refreshToken = generateRefreshToken(
     user.id,
   );

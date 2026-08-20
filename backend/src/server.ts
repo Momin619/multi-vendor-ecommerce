@@ -10,7 +10,8 @@ import authRoutes from "./modules/auth/auth.routes.js";
 
 import { notFoundMiddleware } from "./middlewares/notFound.middleware.js";
 import { errorMiddleware } from "./middlewares/error.middleware.js";
-import dashboardRoutes from "./dashboard/dashboard.routes.js";
+import dashboardRouter from "./modules/dashboard/dashboard.routes.js";
+import productRouter from "./modules/products/products.routes.js";
 const app = express();
 
 /**
@@ -45,7 +46,11 @@ app.use(
 
 app.use(
   "/api",
-  dashboardRoutes,
+  dashboardRouter,
+);
+app.use(
+  "/api/products",
+  productRouter,
 );
 
 /**

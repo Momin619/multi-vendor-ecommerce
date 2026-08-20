@@ -16,24 +16,11 @@ import {
   ERROR_CODES,
 } from "../utils/errorCodes.js";
 
-import type {
-  UserRole,
-} from "../modules/auth/auth.types.js";
-
 /**
  * Extends Express Request so we can attach
  * authenticated user information.
  */
-declare global {
-  namespace Express {
-    interface Request {
-      user?: {
-        userId: string;
-        role: UserRole;
-      };
-    }
-  }
-}
+
 
 /**
  * Authentication middleware.
@@ -84,7 +71,7 @@ export const authenticate = (
       throw new AppError(
         "Invalid access token",
         401,
-        ERROR_CODES.AUTH_INVALID_TOKEN,
+        ERROR_CODES.AUTH_ACCESS_TOKEN_INVALID,
       );
     }
 
@@ -101,52 +88,4 @@ export const authenticate = (
   } catch (error) {
     next(error);
   }
-};
-
-/**
- * Role-based authorization middleware.
- */
-export const authorize = (
-  ...allowedRoles: UserRole[]
-) => {
-  return (
-    req: Request,
-    _res: Response,
-    next: NextFunction,
-  ): void => {
-    /**
-     * Authentication middleware should
-     * normally run before this.
-     */
-    if (!req.user) {
-      next(
-        new AppError(
-          "Authentication required",
-          401,
-          ERROR_CODES.AUTH_UNAUTHORIZED,
-        ),
-      );
-
-      return;
-    }
-
-    /**
-     * Check user's role.
-     */
-    if (
-      !allowedRoles.includes(req.user.role)
-    ) {
-      next(
-        new AppError(
-          "You do not have permission to access this resource",
-          403,
-          ERROR_CODES.AUTH_FORBIDDEN,
-        ),
-      );
-
-      return;
-    }
-
-    next();
-  };
 };

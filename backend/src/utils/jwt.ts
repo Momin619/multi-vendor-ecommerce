@@ -1,80 +1,121 @@
 import jwt from "jsonwebtoken";
-
-import { env } from "../config/env.js";
-
+import { AppError } from "./AppError.js";
+import { ERROR_CODES } from "./errorCodes.js";
 import type {
   AccessTokenPayload,
   RefreshTokenPayload,
-  UserRole,
 } from "../modules/auth/auth.types.js";
 
+import {env} from '../config/env.js';
+
+const ACCESS_TOKEN_SECRET = env.ACCESS_TOKEN_SECRET;
+const REFRESH_TOKEN_SECRET = env.REFRESH_TOKEN_SECRET;
+const ACCESS_TOKEN_EXPIRES_IN = env.ACCESS_TOKEN_EXPIRES_IN;
+const REFRESH_TOKEN_EXPIRES_IN = env.REFRESH_TOKEN_EXPIRES_IN;
+
 /**
- * Generates an access token.
- *
- * Access tokens are short-lived.
+ * Generate a short-lived access token.
  */
 export const generateAccessToken = (
   userId: string,
-  role: UserRole,
+  role: AccessTokenPayload["role"],
 ): string => {
-  const payload: AccessTokenPayload = {
-    userId,
-    role,
-    type: "access",
-  };
-
   return jwt.sign(
-    payload,
-    env.JWT_ACCESS_SECRET,
     {
-      expiresIn: env.JWT_ACCESS_EXPIRES_IN as jwt.SignOptions["expiresIn"],
+      userId,
+      role,
+      type: "access",
+    },
+    ACCESS_TOKEN_SECRET,
+    {
+      expiresIn: ACCESS_TOKEN_EXPIRES_IN,
     },
   );
 };
 
 /**
- * Generates a refresh token.
- *
- * This token is NOT stored in PostgreSQL.
+ * Generate a long-lived refresh token.
  */
-export const generateRefreshToken = (
-  userId: string,
-): string => {
-  const payload: RefreshTokenPayload = {
-    userId,
-    type: "refresh",
-  };
-
+export const generateRefreshToken = (userId: string): string => {
   return jwt.sign(
-    payload,
-    env.JWT_REFRESH_SECRET,
     {
-      expiresIn:
-        env.JWT_REFRESH_EXPIRES_IN as jwt.SignOptions["expiresIn"],
+      userId,
+      type: "refresh",
+    },
+    REFRESH_TOKEN_SECRET,
+    {
+      expiresIn: REFRESH_TOKEN_EXPIRES_IN,
     },
   );
 };
 
 /**
- * Verifies an access token.
+ * Verify an access token.
+ *
+ * Important:
+ * We specifically distinguish an expired token from
+ * another invalid-token error.
  */
 export const verifyAccessToken = (
   token: string,
 ): AccessTokenPayload => {
-  return jwt.verify(
-    token,
-    env.JWT_ACCESS_SECRET,
-  ) as AccessTokenPayload;
+  try {
+    return jwt.verify(
+      token,
+      ACCESS_TOKEN_SECRET,
+    ) as AccessTokenPayload;
+  } catch (error) {
+    if (error instanceof jwt.TokenExpiredError) {
+      throw new AppError(
+        "Access token expired",
+        401,
+        ERROR_CODES.AUTH_ACCESS_TOKEN_EXPIRED,
+      );
+    }
+
+    if (error instanceof jwt.JsonWebTokenError) {
+      throw new AppError(
+        "Invalid access token",
+        401,
+        ERROR_CODES.AUTH_ACCESS_TOKEN_INVALID,
+      );
+    }
+
+    throw error;
+  }
 };
 
 /**
- * Verifies a refresh token.
+ * Verify a refresh token.
+ *
+ * We distinguish an expired refresh token because
+ * the frontend cannot recover from it automatically.
  */
 export const verifyRefreshToken = (
   token: string,
 ): RefreshTokenPayload => {
-  return jwt.verify(
-    token,
-    env.JWT_REFRESH_SECRET,
-  ) as RefreshTokenPayload;
+  try {
+    return jwt.verify(
+      token,
+      REFRESH_TOKEN_SECRET,
+    ) as RefreshTokenPayload;
+  } catch (error) {
+    if (error instanceof jwt.TokenExpiredError) {
+      throw new AppError(
+        "Refresh token expired",
+        401,
+        ERROR_CODES.AUTH_REFRESH_TOKEN_EXPIRED,
+      );
+    }
+
+    if (error instanceof jwt.JsonWebTokenError) {
+      throw new AppError(
+        "Invalid refresh token",
+        401,
+        ERROR_CODES.AUTH_REFRESH_TOKEN_INVALID,
+      );
+    }
+
+    throw error;
+  }
 };

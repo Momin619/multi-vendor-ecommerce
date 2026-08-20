@@ -1,29 +1,18 @@
-import {
-  useForm,
-} from "react-hook-form";
+import { useForm } from "react-hook-form";
+import { toast } from "react-hot-toast";
 
-import {
-  useAuth,
-} from "../../hooks/useAuth";
+import { useAuth } from "../../hooks/useAuth";
+import { useRedirect } from "../../hooks/useRedirect";
+import { getErrorMessage } from "../../api/error.utils";
 
-import {
-  getErrorMessage,
-} from "../../api/error.utils";
-
-import type {
-  RegisterData,
-} from "../../types/auth.types";
+import type { RegisterData } from "../../types/auth.types";
 
 import Button from "../ui/Button";
 import Input from "../ui/Input";
 
-/**
- * Registration form.
- */
 const RegisterForm = () => {
-  const {
-    register: registerUser,
-  } = useAuth();
+  const { register: registerUser } = useAuth();
+  const { redirectTo } = useRedirect();
 
   const {
     register,
@@ -40,16 +29,15 @@ const RegisterForm = () => {
     },
   });
 
-  /**
-   * Watch the role so we can display the current selection.
-   */
   const selectedRole = watch("role");
 
-  const onSubmit = async (
-    data: RegisterData,
-  ) => {
+  const onSubmit = async (data: RegisterData) => {
     try {
       await registerUser(data);
+
+      toast.success("Registered successfully.");
+
+      redirectTo("/login", true);
     } catch (error) {
       setError("root", {
         message: getErrorMessage(error),
@@ -71,8 +59,7 @@ const RegisterForm = () => {
           required: "Name is required",
           minLength: {
             value: 2,
-            message:
-              "Name must contain at least 2 characters",
+            message: "Name must contain at least 2 characters",
           },
         })}
         error={errors.name?.message}
@@ -98,8 +85,7 @@ const RegisterForm = () => {
           required: "Password is required",
           minLength: {
             value: 8,
-            message:
-              "Password must contain at least 8 characters",
+            message: "Password must contain at least 8 characters",
           },
         })}
         error={errors.password?.message}
@@ -126,7 +112,6 @@ const RegisterForm = () => {
                 required: "Please select a role",
               })}
             />
-
             Customer
           </label>
 
@@ -145,7 +130,6 @@ const RegisterForm = () => {
                 required: "Please select a role",
               })}
             />
-
             Seller
           </label>
         </div>

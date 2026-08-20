@@ -6,7 +6,7 @@ import type {
 
 import {
   sendSuccess,
-} from "../utils/response.js";
+} from "../../utils/response.js";
 
 import {
   getCustomerDashboard,

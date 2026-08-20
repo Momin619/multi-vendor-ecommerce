@@ -9,13 +9,13 @@ import {
 
 import {
   authenticate,
-} from "../middlewares/auth.middleware.js";
+} from "../../middlewares/auth.middleware.js";
 
 import {
   authorize,
-} from "../middlewares/authorize.middleware.js";
+} from "../../middlewares/authorize.middleware.js";
 
-const router = Router();
+const dashboardRouter = Router();
 
 /**
  * CUSTOMER DASHBOARD
@@ -35,7 +35,7 @@ const router = Router();
  * 1. Have a valid JWT.
  * 2. Have role = customer.
  */
-router.get(
+dashboardRouter.get(
   "/customer/dashboard",
   authenticate,
   authorize("customer"),
@@ -60,11 +60,11 @@ router.get(
  * 1. Have a valid JWT.
  * 2. Have role = seller.
  */
-router.get(
+dashboardRouter.get(
   "/seller/dashboard",
   authenticate,
   authorize("seller"),
   sellerDashboard,
 );
 
-export default router;
+export default dashboardRouter;
