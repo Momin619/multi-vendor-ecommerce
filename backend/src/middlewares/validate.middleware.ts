@@ -1,29 +1,16 @@
-import type {
-  Request,
-  Response,
-  NextFunction,
-} from "express";
-
+import type { Request, Response, NextFunction } from "express";
 import type { ZodType } from "zod";
 
-/**
- * Creates middleware that validates req.body using a Zod schema.
- */
-export const validateBody = (
+export const validate = (
   schema: ZodType,
+  source: "body" | "params" | "query",
 ) => {
-  return (
-    req: Request,
-    _res: Response,
-    next: NextFunction,
-  ): void => {
-    /**
-     * If validation fails, Zod throws an error.
-     *
-     * The global error middleware will handle it.
-     */
-    req.body = schema.parse(req.body);
-
-    next();
+  return (req: Request, _res: Response, next: NextFunction) => {
+    try {
+      schema.parse(req[source]);
+      next();
+    } catch (error) {
+      next(error);
+    }
   };
 };

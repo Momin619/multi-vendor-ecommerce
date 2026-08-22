@@ -14,7 +14,7 @@ import {
 } from "./auth.schemas.js";
 
 import {
-  validateBody,
+  validate
 } from "../../middlewares/validate.middleware.js";
 
 import {
@@ -30,7 +30,7 @@ const authRouter = Router();
  */
 authRouter.post(
   "/register",
-  validateBody(registerSchema),
+  validate(registerSchema, "body"),
   register,
 );
 
@@ -41,7 +41,7 @@ authRouter.post(
  */
 authRouter.post(
   "/login",
-  validateBody(loginSchema),
+  validate(loginSchema, "body"),
   login,
 );
 
