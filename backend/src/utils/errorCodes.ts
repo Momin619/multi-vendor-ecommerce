@@ -98,7 +98,11 @@ export const ERROR_CODES = {
    * Requested resource does not exist.
    */
   NOT_FOUND: "NOT_FOUND",
-
+  PRODUCT_ACCESS_DENIED : 'PRODUCT_ACCESS_DENIED',
+  PRODUCT_NOT_FOUND:"PRODUCT_NOT_FOUND",
+  PRODUCT_NO_CHANGES:"PRODUCT_NO_CHANGES",
+  INVALID_REQUEST:"INVALID_REQUEST",
+  INVALID_CURSOR :"INVALID_CURSOR",
   /**
    * Unexpected server-side error.
    */

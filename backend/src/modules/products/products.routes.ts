@@ -11,6 +11,7 @@ import {
 import {
   productSchema,
   updateProductSchema,
+  productIdSchema
 } from "./products.schema.js";
 
 import {
@@ -25,7 +26,7 @@ import {
   authorize,
 } from "../../middlewares/authorize.middleware.js";
 
-import {productIdSchema} from "./products.schema.js";
+import {productsPaginationSchema} from './products.schema.js'
 
 const productsRouter = Router();
 

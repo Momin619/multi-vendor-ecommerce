@@ -1,11 +1,15 @@
 import { pool } from "../../database/pool.js";
 import { AppError } from "../../utils/AppError.js";
 import { ERROR_CODES } from "../../utils/errorCodes.js";
-
+import {
+  decodeCursor,
+  encodeCursor,
+} from "../../utils/cursor.js";
 import type {
   Product,
   CreateProductInput,
   UpdateProductInput,
+  PaginatedProducts,ProductCursor,ProductPagination
 } from "./products.types.js";
 
 interface ProductRow {
@@ -101,28 +105,123 @@ export const createProduct = async (
  */
 export const getProducts = async (
   sellerId: string,
-): Promise<Product[]> => {
-  const result = await pool.query<ProductRow>(
-    `
-      SELECT
-        id,
-        seller_id,
-        name,
-        description,
-        price,
-        stock,
-        category,
-        image_url,
-        created_at,
-        updated_at
-      FROM products
-      WHERE seller_id = $1
-      ORDER BY created_at DESC
-    `,
-    [sellerId],
-  );
+  limit: number,
+  cursor?: string,
+): Promise<PaginatedProducts> => {
+  let cursorData: ProductCursor | undefined;
 
-  return result.rows.map(mapProduct);
+  // Decode the cursor only when the client provides one.
+  if (cursor) {
+    try {
+      cursorData = decodeCursor(cursor);
+    } catch {
+      throw new AppError(
+        "Invalid or malformed cursor",
+        400,
+        ERROR_CODES.INVALID_CURSOR,
+      );
+    }
+  }
+
+  /*
+   * Fetch one extra item.
+   *
+   * Example:
+   * limit = 20
+   *
+   * We request 21 rows.
+   *
+   * If we receive 21 rows:
+   *   → there is another page
+   *   → return only 20
+   *
+   * If we receive 20 or fewer:
+   *   → there is no next page
+   */
+  const queryLimit = limit + 1;
+
+  let result;
+
+  if (cursorData) {
+    result = await pool.query<ProductRow>(
+      `
+        SELECT
+          id,
+          seller_id,
+          name,
+          description,
+          price,
+          stock,
+          category,
+          image_url,
+          created_at,
+          updated_at
+        FROM products
+        WHERE seller_id = $1
+          AND (created_at, id) < ($2::timestamptz, $3)
+        ORDER BY created_at DESC, id DESC
+        LIMIT $4
+      `,
+      [
+        sellerId,
+        cursorData.createdAt,
+        cursorData.id,
+        queryLimit,
+      ],
+    );
+  } else {
+    result = await pool.query<ProductRow>(
+      `
+        SELECT
+          id,
+          seller_id,
+          name,
+          description,
+          price,
+          stock,
+          category,
+          image_url,
+          created_at,
+          updated_at
+        FROM products
+        WHERE seller_id = $1
+        ORDER BY created_at DESC, id DESC
+        LIMIT $2
+      `,
+      [sellerId, queryLimit],
+    );
+  }
+
+  const hasMore = result.rows.length > limit;
+
+  // Remove the extra row used to determine whether another page exists.
+  const rows = hasMore
+    ? result.rows.slice(0, limit)
+    : result.rows;
+
+  const products = rows.map(mapProduct);
+
+  let nextCursor: string | null = null;
+
+  if (hasMore) {
+    const lastRow = rows[rows.length - 1];
+
+    if (lastRow) {
+      nextCursor = encodeCursor({
+        createdAt: lastRow.created_at.toISOString(),
+        id: lastRow.id,
+      });
+    }
+  }
+
+  return {
+    data: products,
+    pagination: {
+      nextCursor,
+      hasMore,
+      limit,
+    },
+  };
 };
 
 /**
@@ -173,8 +272,72 @@ export const getProductById = async (
 export const updateProduct = async (
   productId: string,
   sellerId: string,
-  input: UpdateProductInput
+  input: UpdateProductInput,
 ): Promise<Product> => {
+  // 1. Make sure at least one field was provided
+  if (Object.keys(input).length === 0) {
+    throw new AppError(
+      "At least one field is required to update the product",
+      400,
+      ERROR_CODES.INVALID_REQUEST,
+    );
+  }
+
+  // 2. Get the existing product owned by this seller
+  const existingResult = await pool.query<ProductRow>(
+    `
+      SELECT
+        id,
+        seller_id,
+        name,
+        description,
+        price,
+        stock,
+        category,
+        image_url,
+        created_at,
+        updated_at
+      FROM products
+      WHERE id = $1
+        AND seller_id = $2
+    `,
+    [productId, sellerId],
+  );
+
+  const existingProduct = existingResult.rows[0];
+
+  if (!existingProduct) {
+    throw new AppError(
+      "Product not found",
+      404,
+      ERROR_CODES.PRODUCT_NOT_FOUND,
+    );
+  }
+
+  // 3. Check whether at least one field is actually changing
+  const hasChanges =
+    input.name !== undefined &&
+    input.name !== existingProduct.name ||
+    input.description !== undefined &&
+    input.description !== existingProduct.description ||
+    input.price !== undefined &&
+    input.price !== Number(existingProduct.price) ||
+    input.stock !== undefined &&
+    input.stock !== existingProduct.stock ||
+    input.category !== undefined &&
+    input.category !== existingProduct.category ||
+    input.imageUrl !== undefined &&
+    input.imageUrl !== existingProduct.image_url;
+
+  if (!hasChanges) {
+    throw new AppError(
+      "No changes were made to the product",
+      400,
+      ERROR_CODES.PRODUCT_NO_CHANGES,
+    );
+  }
+
+  // 4. Update the product
   const result = await pool.query<ProductRow>(
     `
       UPDATE products
@@ -209,16 +372,16 @@ export const updateProduct = async (
       input.imageUrl,
       productId,
       sellerId,
-    ]
+    ],
   );
 
   const row = result.rows[0];
 
   if (!row) {
     throw new AppError(
-      "Product not found or you do not have permission to modify this product",
+      "Product not found",
       404,
-      ERROR_CODES.NOT_FOUND
+      ERROR_CODES.PRODUCT_NOT_FOUND,
     );
   }
 
@@ -231,7 +394,7 @@ export const updateProduct = async (
  */
 export const deleteProduct = async (
   productId: string,
-  sellerId: string
+  sellerId: string,
 ): Promise<void> => {
   const result = await pool.query(
     `
@@ -239,14 +402,14 @@ export const deleteProduct = async (
       WHERE id = $1
         AND seller_id = $2
     `,
-    [productId, sellerId]
+    [productId, sellerId],
   );
 
   if (result.rowCount === 0) {
     throw new AppError(
-      "Product not found or you do not have permission to delete this product",
+      "Product not found",
       404,
-      ERROR_CODES.NOT_FOUND
+      ERROR_CODES.PRODUCT_NOT_FOUND,
     );
   }
 };

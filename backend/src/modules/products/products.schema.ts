@@ -38,6 +38,22 @@ export const productIdSchema = z.object({
   id: z.uuid("Invalid product ID"),
 });
 
+export const productsPaginationSchema = z.object({
+  limit: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(20)
+    .transform((value) => Math.min(value, 100)),
+
+  cursor: z.string().optional(),
+});
+
+export const productCursorSchema = z.object({
+  createdAt: z.string().datetime(),
+  id: z.string().uuid(),
+});
+
 export const updateProductSchema = productSchema.partial();
 
 export type CreateProductInput =

@@ -28,3 +28,20 @@ export interface UpdateProductInput {
   category?: string;
   imageUrl?: string;
 }
+
+export interface ProductCursor {
+  createdAt: string;
+  id: string;
+}
+
+export interface ProductPagination {
+  nextCursor: string | null;
+  hasMore: boolean;
+  limit: number;
+}
+
+export interface PaginatedProducts {
+  data: Product[];
+  pagination: ProductPagination;
+}
+

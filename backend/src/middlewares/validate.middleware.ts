@@ -3,7 +3,7 @@ import type { ZodType } from "zod";
 
 export const validate = (
   schema: ZodType,
-  source: "body" | "params" | "query",
+  source: "body" | "params",
 ) => {
   return (req: Request, _res: Response, next: NextFunction) => {
     try {

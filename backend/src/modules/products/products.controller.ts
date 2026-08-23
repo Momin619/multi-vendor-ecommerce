@@ -12,6 +12,8 @@ import {
   deleteProduct as deleteProductService,
 } from "./products.service.js";
 
+import {productsPaginationSchema} from './products.schema.js'
+
 import { sendSuccess } from "../../utils/response.js";
 
 type ProductParams = {
@@ -52,14 +54,18 @@ export const getProducts = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const products = await getProductsService(
+    const { limit, cursor } = productsPaginationSchema.parse(req.query);
+
+    const result = await getProductsService(
       req.user!.userId,
+      limit,
+      cursor,
     );
 
     sendSuccess(
       res,
       "Products retrieved successfully",
-      { products },
+      result,
     );
   } catch (error) {
     next(error);
