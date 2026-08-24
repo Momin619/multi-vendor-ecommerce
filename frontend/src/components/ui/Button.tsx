@@ -7,30 +7,48 @@ import LoadingSpinner from "./LoadingSpinner";
 
 interface ButtonProps
   extends ButtonHTMLAttributes<HTMLButtonElement> {
-  children: ReactNode;
   isLoading?: boolean;
+  children?: ReactNode;
 }
 
-/**
- * Reusable application button.
- */
 const Button = ({
   children,
   isLoading = false,
   disabled,
+  className = "",
   ...props
 }: ButtonProps) => {
   return (
     <button
       {...props}
       disabled={disabled || isLoading}
-      className="flex cursor-pointer w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+      className={`
+        inline-flex
+        w-full
+        items-center
+        justify-center
+        cursor-pointer
+        gap-2
+        rounded-lg
+        bg-blue-600
+        px-4
+        py-2.5
+        text-sm
+        font-medium
+        text-white
+        transition
+        hover:bg-blue-700
+        focus:outline-none
+        focus:ring-2
+        focus:ring-blue-500
+        focus:ring-offset-1
+        disabled:cursor-not-allowed
+        disabled:opacity-60
+        sm:w-auto
+        ${className}
+      `}
     >
-      {isLoading ? (
-        <LoadingSpinner />
-      ) : (
-        children
-      )}
+      {isLoading ? <LoadingSpinner /> : children}
     </button>
   );
 };

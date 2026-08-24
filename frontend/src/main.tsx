@@ -30,7 +30,7 @@ ReactDOM.createRoot(
         <Toaster
           position="top-center"
           toastOptions={{
-            duration: 3000,
+            duration: 1800,
           }}
         />
       </AuthProvider>

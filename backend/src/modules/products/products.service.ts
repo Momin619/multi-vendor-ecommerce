@@ -191,7 +191,14 @@ export const getProducts = async (
       [sellerId, queryLimit],
     );
   }
-
+console.log(
+  "ROWS RETURNED BY DATABASE:",
+  result.rows.map((row, index) => ({
+    position: index + 1,
+    id: row.id,
+    createdAt: row.created_at,
+  }))
+);
   const hasMore = result.rows.length > limit;
 
   // Remove the extra row used to determine whether another page exists.
@@ -213,7 +220,11 @@ export const getProducts = async (
       });
     }
   }
-
+console.log("PAGINATION RESULT:", {
+  returnedProducts: products.length,
+  hasMore,
+  nextCursor,
+});
   return {
     data: products,
     pagination: {

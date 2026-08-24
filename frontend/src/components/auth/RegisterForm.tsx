@@ -32,18 +32,15 @@ const RegisterForm = () => {
   const selectedRole = watch("role");
 
   const onSubmit = async (data: RegisterData) => {
-    try {
-      await registerUser(data);
+  try {
+    await registerUser(data);
 
-      toast.success("Registered successfully.");
-
-      redirectTo("/login", true);
-    } catch (error) {
-      setError("root", {
-        message: getErrorMessage(error),
-      });
-    }
-  };
+    toast.success("Registered successfully.");
+    redirectTo("/login", true);
+  } catch (error) {
+    toast.error(getErrorMessage(error));
+  }
+};
 
   return (
     <form
@@ -140,19 +137,15 @@ const RegisterForm = () => {
           </p>
         )}
       </div>
-
-      {errors.root?.message && (
-        <p className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
-          {errors.root.message}
-        </p>
-      )}
-
-      <Button
-        type="submit"
-        isLoading={isSubmitting}
-      >
-        Create Account
-      </Button>
+      <div className="flex justify-center">
+  <Button
+    type="submit"
+    isLoading={isSubmitting}
+    className="sm:w-48"
+  >
+    Create Account
+  </Button>
+</div>
     </form>
   );
 };

@@ -29,23 +29,3 @@ export const getErrorMessage = (
 
   return "Something went wrong. Please try again.";
 };
-
-/**
- * Extract field-level validation errors from backend.
- *
- * Example backend response:
- *
- * errors: {
- *   email: ["Invalid email"],
- *   password: ["Password is required"]
- * }
- */
-export const getFieldErrors = (
-  error: unknown,
-): Record<string, string[]> => {
-  if (axios.isAxiosError<ApiErrorResponse>(error)) {
-    return error.response?.data?.errors ?? {};
-  }
-
-  return {};
-};

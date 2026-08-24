@@ -1,7 +1,6 @@
 import {
   Link,
   Navigate,
-  useLocation,
 } from "react-router-dom";
 
 import LoginForm from "../../components/auth/LoginForm";
@@ -15,6 +14,7 @@ const Login = () => {
   const {
     isAuthenticated,
     isLoading,
+    user
   } = useAuth();
 
 
@@ -30,14 +30,14 @@ const Login = () => {
    * If already authenticated,
    * don't show login form.
    */
-  if (isAuthenticated) {
-    return (
-      <Navigate
-        to="/dashboard"
-        replace
-      />
-    );
-  }
+if (isAuthenticated && user) {
+  return (
+    <Navigate
+      to={`/dashboard/${user.role}`}
+      replace
+    />
+  );
+}
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">

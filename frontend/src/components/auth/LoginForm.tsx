@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { useRedirect } from "../../hooks/useRedirect";
 import { getErrorMessage } from "../../api/error.utils";
-
+import toast from "react-hot-toast";
 import type { LoginData } from "../../types/auth.types";
 
 import Button from "../ui/Button";
@@ -21,7 +21,6 @@ interface LoginLocationState {
 const LoginForm = () => {
   const { login } = useAuth();
   const { redirectTo } = useRedirect();
-
   const location = useLocation();
 
   const state =
@@ -32,7 +31,6 @@ const LoginForm = () => {
   const {
     register,
     handleSubmit,
-    setError,
     formState: {
       errors,
       isSubmitting,
@@ -41,18 +39,16 @@ const LoginForm = () => {
 
   const onSubmit = async (data: LoginData) => {
     try {
-      await login(data);
+      const loggedInUser = await login(data);
 
       const destination = from?.pathname
         ? `${from.pathname}${from.search ?? ""}${from.hash ?? ""}`
-        : "/dashboard";
+        : `/dashboard/${loggedInUser.role}`;
 
       redirectTo(destination, true);
     } catch (error) {
-      setError("root", {
-        message: getErrorMessage(error),
-      });
-    }
+  toast.error(getErrorMessage(error));
+}
   };
 
   return (
@@ -82,18 +78,15 @@ const LoginForm = () => {
         error={errors.password?.message}
       />
 
-      {errors.root?.message && (
-        <p className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
-          {errors.root.message}
-        </p>
-      )}
-
-      <Button
-        type="submit"
-        isLoading={isSubmitting}
-      >
-        Login
-      </Button>
+     <div className="flex justify-center">
+  <Button
+    type="submit"
+    isLoading={isSubmitting}
+    className="sm:w-40"
+  >
+    Login
+  </Button>
+</div>
     </form>
   );
 };

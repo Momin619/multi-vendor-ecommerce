@@ -30,7 +30,7 @@ interface AuthContextValue {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (data: LoginData) => Promise<void>;
+  login: (data: LoginData) => Promise<User>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -102,11 +102,15 @@ useEffect(() => {
   };
 }, []);
 
-  const login = async (data: LoginData): Promise<void> => {
-    // Backend validates credentials and sets both cookies.
-    const response = await loginApi(data);
-    setUser(response.data.user);
-  };
+ const login = async (data: LoginData): Promise<User> => {
+  const response = await loginApi(data);
+
+  const loggedInUser = response.data.user;
+
+  setUser(loggedInUser);
+
+  return loggedInUser;
+};
 
   const register = async (data: RegisterData): Promise<void> => {
     // Backend creates the user and sets both cookies.

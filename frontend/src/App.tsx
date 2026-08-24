@@ -7,15 +7,22 @@ import {
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 
-import DashboardRedirect from "./pages/DashboardRedirect";
 import CustomerDashboard from "./pages/customer/CustomerDashboard";
 import SellerDashboard from "./pages/seller/SellerDashboard";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 import RoleRoute from "./routes/RoleRoute";
 import Navbar from "./components/ui/Navbar";
-import ProtectedTest from "./pages/ProtectedTest";
+import NotFound from "./pages/NotFound";
+import SellerProducts
+  from "./pages/seller/SellerProducts";
 
+import CreateProduct
+  from "./pages/seller/CreateProduct";
+
+import EditProduct
+  from "./pages/seller/EditProduct";
+import ProductDetails from "./pages/seller/ProductsDetails";
 const App = () => {
   return (
     <>
@@ -52,92 +59,49 @@ const App = () => {
 
       <Route element={<ProtectedRoute />}>
 
-        {/* General dashboard */}
+  {/* Customer routes */}
+  <Route element={<RoleRoute allowedRole="customer" />}>
+    <Route
+      path="/dashboard/customer"
+      element={<CustomerDashboard />}
+    />
+  </Route>
 
-        <Route
-          path="/dashboard"
-          element={<DashboardRedirect />}
-          />
+  {/* Seller routes */}
+ <Route element={<RoleRoute allowedRole="seller" />}>
+  <Route
+    path="/dashboard/seller"
+    element={<SellerDashboard />}
+  />
 
-        {/* =================================================
-            PROTECTED TEST ROUTE
-            
-            This route exists specifically to test API
-            requests when access + refresh tokens expire.
-            ================================================= */}
+  <Route
+    path="/seller/products"
+    element={<SellerProducts />}
+  />
 
-        <Route
-          path="/protected-test"
-          element={<ProtectedTest />}
-          />
+  <Route
+    path="/seller/products/create"
+    element={<CreateProduct />}
+  />
 
-        {/* =================================================
-            CUSTOMER ROUTES
-            ================================================= */}
+  <Route
+    path="/seller/products/:id"
+    element={<ProductDetails />}
+  />
 
-        <Route element={<RoleRoute allowedRole="customer" />}>
+  <Route
+    path="/seller/products/:id/edit"
+    element={<EditProduct />}
+  />
+</Route>
 
-          <Route
-            path="/customer/dashboard"
-            element={<CustomerDashboard />}
-            />
-
-          {/* Future customer routes */}
-
-          {/*
-          <Route
-          path="/customer/products"
-          element={<CustomerProducts />}
-          />
-          
-          <Route
-          path="/customer/orders"
-          element={<CustomerOrders />}
-          />
-          */}
-        </Route>
-
-        {/* =================================================
-            SELLER ROUTES
-            ================================================= */}
-
-        <Route element={<RoleRoute allowedRole="seller" />}>
-
-          <Route
-            path="/seller/dashboard"
-            element={<SellerDashboard />}
-            />
-
-          {/* Future seller routes */}
-
-          {/*
-          <Route
-          path="/seller/products"
-          element={<SellerProducts />}
-          />
-          
-          <Route
-          path="/seller/orders"
-          element={<SellerOrders />}
-          />
-          */}
-        </Route>
-
-      </Route>
+</Route>
 
       {/* =====================================================
           ROOT ROUTE
           ===================================================== */}
 
-      <Route
-        path="/"
-        element={
-          <Navigate
-          to="/dashboard"
-          replace
-          />
-        }
-        />
+     
 
       {/* =====================================================
           UNKNOWN ROUTES
@@ -146,10 +110,7 @@ const App = () => {
       <Route
         path="*"
         element={
-          <Navigate
-          to="/dashboard"
-          replace
-          />
+          <NotFound/>
         }
         />
     </Routes>
