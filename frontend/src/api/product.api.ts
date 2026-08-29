@@ -2,22 +2,14 @@ import api from "./axios";
 
 import type {
   ApiResponse,
-  CreateProductInput,
   PaginatedProducts,
   Product,
-  UpdateProductInput,
 } from "../types/products.types.ts";
 
 export const getProducts = async (
   limit = 5,
   cursor?: string,
 ): Promise<ApiResponse<PaginatedProducts>> => {
-console.log("API REQUEST:", {
-    limit,
-    cursor,
-  });
-
-
   const response = await api.get<
     ApiResponse<PaginatedProducts>
   >("/products", {
@@ -40,8 +32,15 @@ export const getProductById = async (
   return response.data;
 };
 
+/**
+ * Creates a product.
+ *
+ * Accepts FormData (not a plain object) because the request now
+ * carries a file (the product image) alongside the text fields,
+ * which requires "multipart/form-data" instead of JSON.
+ */
 export const createProduct = async (
-  data: CreateProductInput,
+  data: FormData,
 ): Promise<ApiResponse<{ product: Product }>> => {
   const response = await api.post<
     ApiResponse<{ product: Product }>
@@ -50,9 +49,15 @@ export const createProduct = async (
   return response.data;
 };
 
+/**
+ * Updates a product.
+ *
+ * Also accepts FormData, for the same reason as createProduct —
+ * a new image file may or may not be included in an edit.
+ */
 export const updateProduct = async (
   productId: string,
-  data: UpdateProductInput,
+  data: FormData,
 ): Promise<ApiResponse<{ product: Product }>> => {
   const response = await api.put<
     ApiResponse<{ product: Product }>
@@ -70,3 +75,7 @@ export const deleteProduct = async (
 
   return response.data;
 };
+
+// Kept for reference/type-checking elsewhere in the app where a
+// plain (non-FormData) product input shape is still useful, e.g.
+// building the FormData itself in ProductForm.

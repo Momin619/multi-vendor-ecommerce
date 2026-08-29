@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
+import { FiUploadCloud, FiX } from "react-icons/fi";
 
 import Button from "../ui/Button";
 import Input from "../ui/Input";
@@ -22,12 +24,28 @@ interface ProductFormProps {
   product?: Product;
 }
 
+const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
+
 const ProductForm = ({
   product,
 }: ProductFormProps) => {
   const { redirectTo } = useRedirect();
 
   const isEditMode = Boolean(product);
+
+  // Holds the actual file object the user picked (react-hook-form
+  // can't manage File objects the same way it manages text inputs).
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  // Shown in the UI. Starts as the product's existing image (edit mode)
+  // or nothing (create mode). Replaced with a local preview once the
+  // user picks a new file.
+  const [previewUrl, setPreviewUrl] = useState<string | null>(
+    product?.imageUrl ?? null,
+  );
+
+  const [imageError, setImageError] = useState<string | null>(null);
 
   const {
     register,
@@ -44,35 +62,77 @@ const ProductForm = ({
       price: product?.price ?? undefined,
       stock: product?.stock ?? undefined,
       category: product?.category ?? "",
-      imageUrl: product?.imageUrl ?? "",
     },
   });
 
-  const onSubmit = async (
-    data: CreateProductInput,
+  const handleFileChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      setImageError("Only JPG, PNG, or WEBP images are allowed.");
+      return;
+    }
+
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      setImageError("Image must be smaller than 5MB.");
+      return;
+    }
+
+    setImageError(null);
+    setSelectedFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+  };
+
+  const handleRemoveImage = () => {
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    setImageError(null);
+  };
+
+  const onSubmit = async (data: CreateProductInput) => {
+    if (!isEditMode && !selectedFile) {
+      setImageError("Product image is required.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("price", String(data.price));
+    formData.append("stock", String(data.stock));
+    formData.append("category", data.category);
+
+   
+      formData.append("description", data.description ?? "");
+    
+
+    if (selectedFile) {
+      formData.append("image", selectedFile);
+    }
+
     try {
       if (isEditMode && product) {
-        await updateProduct(product.id, data);
+        await updateProduct(product.id, formData);
 
-        toast.success(
-          "Product updated successfully.",
-        );
+        toast.success("Product updated successfully.");
       } else {
-        await createProduct(data);
+        await createProduct(formData);
 
-        toast.success(
-          "Product created successfully.",
-        );
+        toast.success("Product created successfully.");
       }
 
       redirectTo("/seller/products", true);
     } catch (error) {
-      
+      setError("root", {
+        message: getErrorMessage(error),
+      });
 
-      toast.error(
-        getErrorMessage(error),
-      );
+      toast.error(getErrorMessage(error));
     }
   };
 
@@ -103,20 +163,20 @@ const ProductForm = ({
         })}
         error={errors.name?.message}
       />
-<TextArea
-  id="description"
-  label="Description"
-  rows={4}
-  placeholder="Enter product description"
-  {...register("description", {
-    maxLength: {
-      value: 2000,
-      message: "Description cannot exceed 2000 characters",
-    },
-  })}
-  error={errors.description?.message}
-/>
-     
+
+      <TextArea
+        id="description"
+        label="Description"
+        rows={4}
+        placeholder="Enter product description"
+        {...register("description", {
+          maxLength: {
+            value: 2000,
+            message: "Description cannot exceed 2000 characters",
+          },
+        })}
+        error={errors.description?.message}
+      />
 
       <Input
         id="price"
@@ -186,25 +246,93 @@ const ProductForm = ({
         error={errors.category?.message}
       />
 
-      <Input
-        id="imageUrl"
-        label="Image URL"
-        type="url"
-        placeholder="https://example.com/image.jpg"
-        {...register("imageUrl", {
-          validate: (value) => {
-            if (!value) return true;
+      {/* Product image upload */}
+      <div>
+        <label className="mb-2 block text-sm font-medium text-gray-700">
+          Product Image
+        </label>
 
-            try {
-              new URL(value);
-              return true;
-            } catch {
-              return "Image URL must be valid";
-            }
-          },
-        })}
-        error={errors.imageUrl?.message}
-      />
+        {previewUrl ? (
+          <div className="relative inline-block">
+            <img
+              src={previewUrl}
+              alt="Product preview"
+              className="h-40 w-40 rounded-xl object-cover ring-1 ring-gray-200"
+            />
+
+            <button
+              type="button"
+              onClick={handleRemoveImage}
+              aria-label="Remove image"
+              className="
+                absolute
+                -right-2
+                -top-2
+                flex
+                h-7
+                w-7
+                items-center
+                justify-center
+                rounded-full
+                bg-gray-900
+                text-white
+                shadow
+                transition
+                hover:bg-red-600
+              "
+            >
+              <FiX className="h-4 w-4" />
+            </button>
+          </div>
+        ) : (
+          <label
+            htmlFor="image-upload"
+            className="
+              flex
+              h-40
+              w-full
+              cursor-pointer
+              flex-col
+              items-center
+              justify-center
+              gap-2
+              rounded-xl
+              border-2
+              border-dashed
+              border-gray-300
+              bg-gray-50
+              text-gray-500
+              transition
+              hover:border-blue-400
+              hover:bg-blue-50
+              hover:text-blue-600
+              sm:w-64
+            "
+          >
+            <FiUploadCloud className="h-6 w-6" />
+            <span className="text-sm font-medium">
+              Click to upload an image
+            </span>
+            <span className="text-xs text-gray-400">
+              JPG, PNG, or WEBP — up to 5MB
+            </span>
+
+            <input
+              id="image-upload"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              onChange={handleFileChange}
+            />
+          </label>
+        )}
+
+        {imageError && (
+          <p className="mt-2 text-sm text-red-600">
+            {imageError}
+          </p>
+        )}
+      </div>
 
       {errors.root?.message && (
         <p className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
@@ -212,18 +340,16 @@ const ProductForm = ({
         </p>
       )}
 
-     <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-  <Button
-    type="submit"
-    isLoading={isSubmitting}
-  >
-    {isEditMode ? "Update Product" : "Create Product"}
-  </Button>
-</div>
+      <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <Button
+          type="submit"
+          isLoading={isSubmitting}
+        >
+          {isEditMode ? "Update Product" : "Create Product"}
+        </Button>
+      </div>
 
-      {isSubmitting && (
-        <LoadingSpinner />
-      )}
+  
     </form>
   );
 };

@@ -12,7 +12,7 @@ import {
   deleteProduct as deleteProductService,
 } from "./products.service.js";
 
-import {productsPaginationSchema} from './products.schema.js'
+import { productsPaginationSchema } from "./products.schema.js";
 
 import { sendSuccess } from "../../utils/response.js";
 
@@ -26,19 +26,26 @@ type ProductParams = {
 export const createProduct = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> => {
+  console.log("BODY:", req.body);
+  console.log("FILE:", req.file);
+
   try {
     const product = await createProductService(
       req.user!.userId,
-      req.body
+      {
+        ...req.body,
+        imageUrl: req.file?.path,
+        imagePublicId: req.file?.filename,
+      },
     );
 
     sendSuccess(
       res,
       "Product created successfully",
       { product },
-      201
+      201,
     );
   } catch (error) {
     next(error);
@@ -54,7 +61,8 @@ export const getProducts = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const { limit, cursor } = productsPaginationSchema.parse(req.query);
+    const { limit, cursor } =
+      productsPaginationSchema.parse(req.query);
 
     const result = await getProductsService(
       req.user!.userId,
@@ -71,24 +79,25 @@ export const getProducts = async (
     next(error);
   }
 };
+
 /**
  * GET /api/products/:id
  */
 export const getProductById = async (
   req: Request<ProductParams>,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> => {
   try {
-  const product = await getProductByIdService(
-  req.params.id,
-  req.user!.userId,
-);
+    const product = await getProductByIdService(
+      req.params.id,
+      req.user!.userId,
+    );
 
     sendSuccess(
       res,
       "Product retrieved successfully",
-      { product }
+      { product },
     );
   } catch (error) {
     next(error);
@@ -101,19 +110,29 @@ export const getProductById = async (
 export const updateProduct = async (
   req: Request<ProductParams>,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> => {
   try {
     const product = await updateProductService(
       req.params.id,
       req.user!.userId,
-      req.body
+      {
+        ...req.body,
+
+        // Only add image information if a new image was uploaded
+        ...(req.file
+          ? {
+              imageUrl: req.file.path,
+              imagePublicId: req.file.filename,
+            }
+          : {}),
+      },
     );
 
     sendSuccess(
       res,
       "Product updated successfully",
-      { product }
+      { product },
     );
   } catch (error) {
     next(error);
@@ -126,18 +145,18 @@ export const updateProduct = async (
 export const deleteProduct = async (
   req: Request<ProductParams>,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> => {
   try {
     await deleteProductService(
       req.params.id,
-      req.user!.userId
+      req.user!.userId,
     );
 
     sendSuccess(
       res,
       "Product deleted successfully",
-      null
+      null,
     );
   } catch (error) {
     next(error);

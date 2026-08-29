@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+
 export const productSchema = z.object({
   name: z
     .string()
@@ -13,11 +14,11 @@ export const productSchema = z.object({
     .max(2000, "Description cannot exceed 2000 characters")
     .optional(),
 
-  price: z
+  price: z.coerce
     .number()
     .min(0, "Price cannot be negative"),
 
-  stock: z
+  stock: z.coerce
     .number()
     .int("Stock must be a whole number")
     .min(0, "Stock cannot be negative"),
@@ -27,11 +28,6 @@ export const productSchema = z.object({
     .trim()
     .min(2, "Category must contain at least 2 characters")
     .max(100, "Category cannot exceed 100 characters"),
-
-  imageUrl: z
-    .string()
-    .url("Image URL must be valid")
-    .optional(),
 });
 
 export const productIdSchema = z.object({

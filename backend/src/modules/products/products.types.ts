@@ -7,8 +7,23 @@ export interface Product {
   stock: number;
   category: string;
   imageUrl: string | null;
+  imagePublicId: string | null;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface ProductRow {
+  id: string;
+  seller_id: string;
+  name: string;
+  description: string | null;
+  price: string;
+  stock: number;
+  category: string;
+  image_url: string | null;
+  image_public_id: string | null;
+  created_at: Date;
+  updated_at: Date;
 }
 
 export interface CreateProductInput {
@@ -18,6 +33,7 @@ export interface CreateProductInput {
   stock: number;
   category: string;
   imageUrl?: string;
+  imagePublicId?: string;
 }
 
 export interface UpdateProductInput {
@@ -27,6 +43,7 @@ export interface UpdateProductInput {
   stock?: number;
   category?: string;
   imageUrl?: string;
+  imagePublicId?: string;
 }
 
 export interface ProductCursor {

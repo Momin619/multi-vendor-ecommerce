@@ -26,7 +26,7 @@ import {
   authorize,
 } from "../../middlewares/authorize.middleware.js";
 
-import {productsPaginationSchema} from './products.schema.js'
+import { uploadProductImage } from "../../middlewares/upload.middleware.js"
 
 const productsRouter = Router();
 
@@ -43,10 +43,10 @@ productsRouter.use(authenticate);
 productsRouter.post(
   "/",
   authorize("seller"),
+  uploadProductImage,          // ← NEW: parses the file first
   validate(productSchema, "body"),
   createProduct,
 );
-
 /**
  * PUT /api/products/:id
  *
@@ -59,6 +59,7 @@ productsRouter.put(
   "/:id",
   authorize("seller"),
   validate(productIdSchema, "params"),
+  uploadProductImage,                       // ← must come before body validation
   validate(updateProductSchema, "body"),
   updateProduct,
 );

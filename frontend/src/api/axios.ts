@@ -33,10 +33,6 @@ const api = axios.create({
    * Required because authentication uses HTTP-only cookies.
    */
   withCredentials: true,
-
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 /**
