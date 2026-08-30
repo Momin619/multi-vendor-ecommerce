@@ -21,6 +21,8 @@ import {
   authenticate,
 } from "../../middlewares/auth.middleware.js";
 
+import { loginLimiter , registerLimiter } from "../../middlewares/token-bucket.middleware.js";
+
 const authRouter = Router();
 
 /**
@@ -30,6 +32,7 @@ const authRouter = Router();
  */
 authRouter.post(
   "/register",
+  registerLimiter,
   validate(registerSchema, "body"),
   register,
 );
@@ -41,8 +44,9 @@ authRouter.post(
  */
 authRouter.post(
   "/login",
+  loginLimiter,
   validate(loginSchema, "body"),
-  login,
+  login
 );
 
 /**

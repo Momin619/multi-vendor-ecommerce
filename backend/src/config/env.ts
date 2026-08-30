@@ -39,5 +39,4 @@ export const env = {
 
   CLOUDINARY_CLOUD_NAME: getRequiredEnv("CLOUDINARY_CLOUD_NAME"),
   CLOUDINARY_API_KEY: getRequiredEnv("CLOUDINARY_API_KEY"),
-  CLOUDINARY_API_SECRET: getRequiredEnv("CLOUDINARY_API_SECRET"),
 };

@@ -28,8 +28,7 @@ export const createProduct = async (
   res: Response,
   next: NextFunction,
 ): Promise<void> => {
-  console.log("BODY:", req.body);
-  console.log("FILE:", req.file);
+  
 
   try {
     const product = await createProductService(

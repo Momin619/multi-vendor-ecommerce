@@ -60,7 +60,6 @@ export const createProduct = async (
   sellerId: string,
   input: CreateProductInput,
 ): Promise<Product> => {
-console.log('data provided as argument from controller : ', input)
 
   const result = await pool.query<ProductRow>(
     `

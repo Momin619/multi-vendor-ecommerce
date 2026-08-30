@@ -12,7 +12,13 @@ import { notFoundMiddleware } from "./middlewares/notFound.middleware.js";
 import { errorMiddleware } from "./middlewares/error.middleware.js";
 import dashboardRouter from "./modules/dashboard/dashboard.routes.js";
 import productRouter from "./modules/products/products.routes.js";
+
+import { logger } from "./middlewares/logger.middleware.js"; 
+
 const app = express();
+
+
+app.use(logger);
 
 /**
  * Parse incoming JSON request bodies.

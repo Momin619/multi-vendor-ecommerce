@@ -136,7 +136,7 @@ export const loginUser = async (
   }
 
   const databaseUser = result.rows[0];
-console.log("databaseUser", databaseUser);
+
   /**
    * Compare the supplied password with the stored hash.
    */
@@ -154,7 +154,7 @@ console.log("databaseUser", databaseUser);
   }
 
   const user = mapUser(databaseUser);
-console.log("user", user);
+
   const accessToken = generateAccessToken(
     user.id,
     user.role,
