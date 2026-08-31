@@ -15,6 +15,8 @@ import productRouter from "./modules/products/products.routes.js";
 
 import { logger } from "./middlewares/logger.middleware.js"; 
 
+import { startOtpCleanupJob } from "./jobs/otpCleanup.job.js";
+
 const app = express();
 
 
@@ -83,6 +85,14 @@ const startServer = async (): Promise<void> => {
      * the HTTP server.
      */
     await checkDatabaseConnection();
+
+    /**
+     * Start background jobs.
+     *
+     * Deletes expired/old password-reset OTPs on an hourly
+     * schedule so the table doesn't accumulate rows forever.
+     */
+    startOtpCleanupJob();
 
     app.listen(
       env.PORT,

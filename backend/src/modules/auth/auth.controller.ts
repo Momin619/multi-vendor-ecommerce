@@ -9,6 +9,8 @@ import {
   registerUser,
   refreshAccessToken,
   getCurrentUser,
+  requestPasswordResetOtp,
+  resetPasswordWithOtp,
 } from "./auth.service.js";
 import {
   accessTokenCookieOptions,
@@ -224,6 +226,57 @@ export const logout = async (
     sendSuccess(
       res,
       "Logout successful",
+      null,
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Forgot-password controller.
+ *
+ * Requests a password-reset OTP to be emailed to the user.
+ */
+export const forgotPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    console.log(req.body)
+    await requestPasswordResetOtp(req.body);
+
+    /**
+     * Always return the same message whether or not the
+     * email belongs to an account — see auth.service.ts.
+     */
+    sendSuccess(
+      res,
+      "If that email is registered, a reset code has been sent.",
+      null,
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Reset-password controller.
+ *
+ * Verifies the OTP and sets the new password.
+ */
+export const resetPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    await resetPasswordWithOtp(req.body);
+
+    sendSuccess(
+      res,
+      "Password reset successfully. Please log in.",
       null,
     );
   } catch (error) {

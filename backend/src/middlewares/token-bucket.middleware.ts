@@ -77,3 +77,28 @@ export const registerLimiter = tokenBucketRateLimit({
   capacity: 3,
   refillRate: 3 / 60,
 });
+
+/**
+ * Limits how often a client can request a password-reset OTP.
+ *
+ * Kept intentionally strict (3 requests / 10 minutes) since each
+ * request sends an email — this is the main defense against
+ * someone spamming a victim's inbox with reset codes.
+ */
+export const forgotPasswordLimiter = tokenBucketRateLimit({
+  capacity: 3,
+  refillRate: 3 / (10 * 60),
+});
+
+/**
+ * Limits how often a client can attempt to verify/consume an OTP.
+ *
+ * This is a second layer on top of the per-OTP `attempts` counter
+ * in the database — that counter protects a single code, this
+ * protects against a client hammering the endpoint across
+ * multiple requested codes.
+ */
+export const resetPasswordLimiter = tokenBucketRateLimit({
+  capacity: 8,
+  refillRate: 8 / (10 * 60),
+});

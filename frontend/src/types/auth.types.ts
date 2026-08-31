@@ -19,6 +19,22 @@ export interface LoginData {
 }
 
 /**
+ * Data submitted when requesting a password-reset OTP.
+ */
+export interface ForgotPasswordData {
+  email: string;
+}
+
+/**
+ * Data submitted when verifying an OTP and setting a new password.
+ */
+export interface ResetPasswordData {
+  email: string;
+  otp: string;
+  newPassword: string;
+}
+
+/**
  * Authentication response returned after login/register.
  */
 export interface AuthData {

@@ -39,4 +39,26 @@ export const env = {
 
   CLOUDINARY_CLOUD_NAME: getRequiredEnv("CLOUDINARY_CLOUD_NAME"),
   CLOUDINARY_API_KEY: getRequiredEnv("CLOUDINARY_API_KEY"),
+  EMAILJS_SERVICE_ID: getRequiredEnv("EMAILJS_SERVICE_ID"),
+  EMAILJS_TEMPLATE_ID: getRequiredEnv("EMAILJS_TEMPLATE_ID"),
+  EMAILJS_PUBLIC_KEY: getRequiredEnv("EMAILJS_PUBLIC_KEY"),
+  EMAILJS_PRIVATE_KEY: getRequiredEnv("EMAILJS_PRIVATE_KEY"),
+
+  /**
+   * Used by utils/email.ts to send password-reset OTP emails.
+   
+
+  /**
+   * The "from" address for outgoing emails.
+   *
+   * Defaults to Resend's sandbox sender so the app still works
+   * before a custom domain is verified.
+   */
+ 
+
+  /**
+   * How long a password-reset OTP stays valid.
+   */
+  OTP_EXPIRES_IN_MINUTES:
+    Number(process.env.OTP_EXPIRES_IN_MINUTES) || 10,
 };

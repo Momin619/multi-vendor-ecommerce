@@ -17,6 +17,9 @@ import NotFound from "./pages/NotFound";
 import SellerProducts
   from "./pages/seller/SellerProducts";
 
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
+
 import CreateProduct
   from "./pages/seller/CreateProduct";
 
@@ -43,7 +46,15 @@ const App = () => {
         path="/register"
         element={<Register />}
         />
+<Route
+  path="/forgot-password"
+  element={<ForgotPassword />}
+/>
 
+<Route
+  path="/reset-password"
+  element={<ResetPassword />}
+/>
       {/* =====================================================
           PROTECTED ROUTES
           

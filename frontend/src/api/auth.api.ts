@@ -3,6 +3,8 @@ import api from "./axios";
 import type {
   LoginData,
   RegisterData,
+  ForgotPasswordData,
+  ResetPasswordData,
 } from "../types/auth.types";
 
 import type {
@@ -106,6 +108,39 @@ export const logout = async (): Promise<
   const response =
     await api.post<ApiResponse<null>>(
       "/auth/logout",
+    );
+
+  return response.data;
+};
+
+/**
+ * Request a password-reset OTP.
+ *
+ * Backend always responds the same way whether or not the
+ * email belongs to an account.
+ */
+export const forgotPassword = async (
+  data: ForgotPasswordData,
+): Promise<ApiResponse<null>> => {
+  const response =
+    await api.post<ApiResponse<null>>(
+      "/auth/forgot-password",
+      data,
+    );
+
+  return response.data;
+};
+
+/**
+ * Verify an OTP and set a new password.
+ */
+export const resetPassword = async (
+  data: ResetPasswordData,
+): Promise<ApiResponse<null>> => {
+  const response =
+    await api.post<ApiResponse<null>>(
+      "/auth/reset-password",
+      data,
     );
 
   return response.data;

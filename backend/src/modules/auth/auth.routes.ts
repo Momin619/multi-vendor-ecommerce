@@ -6,11 +6,15 @@ import {
   refresh,
   logout,
   me,
+  forgotPassword,
+  resetPassword,
 } from "./auth.controller.js";
 
 import {
   registerSchema,
   loginSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
 } from "./auth.schemas.js";
 
 import {
@@ -21,7 +25,12 @@ import {
   authenticate,
 } from "../../middlewares/auth.middleware.js";
 
-import { loginLimiter , registerLimiter } from "../../middlewares/token-bucket.middleware.js";
+import {
+  loginLimiter,
+  registerLimiter,
+  forgotPasswordLimiter,
+  resetPasswordLimiter,
+} from "../../middlewares/token-bucket.middleware.js";
 
 const authRouter = Router();
 
@@ -80,6 +89,31 @@ authRouter.get(
   "/me",
   authenticate,
   me,
+);
+
+/**
+ * POST /api/auth/forgot-password
+ *
+ * Emails a 6-digit OTP to the given address, if it belongs
+ * to an account. Always responds the same way either way.
+ */
+authRouter.post(
+  "/forgot-password",
+  forgotPasswordLimiter,
+  validate(forgotPasswordSchema, "body"),
+  forgotPassword,
+);
+
+/**
+ * POST /api/auth/reset-password
+ *
+ * Verifies the OTP and sets a new password.
+ */
+authRouter.post(
+  "/reset-password",
+  resetPasswordLimiter,
+  validate(resetPasswordSchema, "body"),
+  resetPassword,
 );
 
 export default authRouter;

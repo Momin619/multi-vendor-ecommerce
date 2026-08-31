@@ -80,6 +80,27 @@ export const ERROR_CODES = {
    */
   AUTH_FORBIDDEN: "AUTH_FORBIDDEN",
 
+  /**
+   * The submitted password-reset OTP is missing, malformed,
+   * doesn't match, or belongs to no active reset request.
+   *
+   * Deliberately used for "no such user" too, so the endpoint
+   * can't be used to check which emails are registered.
+   */
+  AUTH_OTP_INVALID: "AUTH_OTP_INVALID",
+
+  /**
+   * The OTP was valid at some point but has since expired.
+   */
+  AUTH_OTP_EXPIRED: "AUTH_OTP_EXPIRED",
+
+  /**
+   * Too many incorrect OTP attempts for the current code.
+   * The user must request a new one.
+   */
+  AUTH_OTP_TOO_MANY_ATTEMPTS: "AUTH_OTP_TOO_MANY_ATTEMPTS",
+  AUTH_NEW_PASSWORD_SAME: "AUTH_NEW_PASSWORD_SAME",
+
   // =========================
   // Validation
   // =========================
