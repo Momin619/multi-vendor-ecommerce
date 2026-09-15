@@ -8,6 +8,7 @@ import { notFoundMiddleware } from "./middlewares/notFound.middleware.js";
 import { errorMiddleware } from "./middlewares/error.middleware.js";
 import dashboardRouter from "./modules/dashboard/dashboard.routes.js";
 import productRouter from "./modules/products/products.routes.js";
+import catalogRouter from "./modules/catalog/catalog.routes.js";
 
 import { logger } from "./middlewares/logger.middleware.js";
 
@@ -52,6 +53,10 @@ app.use(
 app.use(
   "/api/products",
   productRouter,
+);
+app.use(
+  "/api/catalog",
+  catalogRouter,
 );
 
 /**

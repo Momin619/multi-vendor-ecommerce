@@ -17,6 +17,11 @@ import NotFound from "./pages/NotFound";
 import SellerProducts
   from "./pages/seller/SellerProducts";
 
+import BrowseProducts
+  from "./pages/customer/BrowseProducts";
+import CustomerProductDetails
+  from "./pages/customer/CustomerProductDetails";
+
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
 
@@ -75,6 +80,16 @@ const App = () => {
     <Route
       path="/dashboard/customer"
       element={<CustomerDashboard />}
+    />
+
+    <Route
+      path="/customer/products"
+      element={<BrowseProducts />}
+    />
+
+    <Route
+      path="/customer/products/:id"
+      element={<CustomerProductDetails />}
     />
   </Route>
 
