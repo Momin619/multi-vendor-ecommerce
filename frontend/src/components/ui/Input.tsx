@@ -23,7 +23,7 @@ const Input = ({
           block
           text-sm
           font-medium
-          text-gray-700
+          text-ink
         "
       >
         {label}
@@ -36,29 +36,29 @@ const Input = ({
           block
           w-full
           min-w-0
-          rounded-lg
+          rounded-md
           border
-          border-gray-300
-          bg-white
+          border-border
+          bg-surface
           px-3
           py-2.5
           text-sm
-          text-gray-900
+          text-ink
           outline-none
           transition
-          placeholder:text-gray-400
-          focus:border-blue-500
+          placeholder:text-ink-soft/60
+          focus:border-accent
           focus:ring-2
-          focus:ring-blue-100
+          focus:ring-accent-soft
           disabled:cursor-not-allowed
-          disabled:bg-gray-100
+          disabled:bg-paper
           sm:text-base
           ${className}
         `}
       />
 
       {error && (
-        <p className="break-words text-xs text-red-600 sm:text-sm">
+        <p className="break-words text-xs text-danger sm:text-sm">
           {error}
         </p>
       )}

@@ -131,8 +131,8 @@ useEffect(() => {
 
   if (products.length === 0) {
     return (
-      <div className="rounded-xl bg-white p-6 text-center shadow sm:p-10">
-        <p className="text-sm text-gray-500 sm:text-base">
+      <div className="rounded-md border border-dashed border-border bg-surface p-6 text-center sm:p-10">
+        <p className="text-sm text-ink-soft sm:text-base">
           You have no products yet.
         </p>
       </div>
@@ -164,7 +164,7 @@ useEffect(() => {
 
       {/* End message */}
       {!hasMore && products.length > 0 && (
-        <p className="mt-8 px-4 text-center text-xs text-gray-500 sm:text-sm">
+        <p className="mt-8 px-4 text-center text-xs text-ink-soft sm:text-sm">
           You have reached the end of your products.
         </p>
       )}

@@ -89,16 +89,16 @@ const RegisterForm = () => {
       />
 
       <div>
-        <p className="mb-2 text-sm font-medium text-gray-700">
+        <p className="mb-2 text-sm font-medium text-ink">
           Account type
         </p>
 
         <div className="grid grid-cols-2 gap-3">
           <label
-            className={`cursor-pointer rounded-lg border p-3 text-center ${
+            className={`cursor-pointer rounded-md border p-3 text-center text-sm font-medium transition ${
               selectedRole === "customer"
-                ? "border-blue-600 bg-blue-50"
-                : "border-gray-300"
+                ? "border-accent bg-accent-soft text-accent-ink"
+                : "border-border text-ink-soft hover:border-ink-soft"
             }`}
           >
             <input
@@ -113,10 +113,10 @@ const RegisterForm = () => {
           </label>
 
           <label
-            className={`cursor-pointer rounded-lg border p-3 text-center ${
+            className={`cursor-pointer rounded-md border p-3 text-center text-sm font-medium transition ${
               selectedRole === "seller"
-                ? "border-blue-600 bg-blue-50"
-                : "border-gray-300"
+                ? "border-accent bg-accent-soft text-accent-ink"
+                : "border-border text-ink-soft hover:border-ink-soft"
             }`}
           >
             <input
@@ -132,7 +132,7 @@ const RegisterForm = () => {
         </div>
 
         {errors.role?.message && (
-          <p className="mt-1 text-sm text-red-600">
+          <p className="mt-1 text-sm text-danger">
             {errors.role.message}
           </p>
         )}

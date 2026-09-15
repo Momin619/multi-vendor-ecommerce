@@ -73,16 +73,16 @@ const SellerDashboard = () => {
   };
 
   return (
-   <div className="min-h-screen bg-gray-100 p-4 sm:p-6">
+   <div className="min-h-screen bg-paper p-4 sm:p-6">
       <div className="mx-auto max-w-4xl">
-   <div className="rounded-xl bg-white p-5 shadow sm:p-8">
+   <div className="rounded-md border border-border bg-surface p-5 sm:p-8">
    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-2xl font-bold">
+              <h1 className="font-display text-2xl font-semibold text-ink">
                 Seller Dashboard
               </h1>
 
-              <p className="mt-1 text-gray-500">
+              <p className="mt-1 text-ink-soft">
                 Welcome, {user?.name}
               </p>
             </div>
@@ -97,17 +97,17 @@ const SellerDashboard = () => {
             </div>
           </div>
 
-          <div className="mt-8 rounded-lg bg-green-50 p-5">
-            <p className="font-medium text-green-900">
+          <div className="mt-8 rounded-md border border-success-soft bg-success-soft p-5">
+            <p className="font-medium text-success">
               Role: {user?.role}
             </p>
 
             {isLoading ? (
-              <p className="mt-2 text-green-700">
+              <p className="mt-2 text-ink-soft">
                 Loading protected API...
               </p>
             ) : (
-              <p className="mt-2 text-green-700">
+              <p className="mt-2 text-ink-soft">
                 {message}
               </p>
             )}

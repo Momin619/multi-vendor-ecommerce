@@ -4,13 +4,13 @@ import ForgotPasswordForm from "../../components/auth/ForgotPasswordForm";
 
 const ForgotPassword = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
-      <div className="w-full max-w-md rounded-xl bg-white p-8 shadow">
-        <h1 className="text-2xl font-bold text-gray-900">
+    <div className="flex min-h-screen items-center justify-center bg-paper px-4">
+      <div className="w-full max-w-md rounded-md border border-border bg-surface p-8">
+        <h1 className="font-display text-2xl font-semibold text-ink">
           Forgot password
         </h1>
 
-        <p className="mt-2 text-sm text-gray-500">
+        <p className="mt-2 text-sm text-ink-soft">
           Enter your email and we'll send you a 6-digit reset code.
         </p>
 
@@ -18,12 +18,12 @@ const ForgotPassword = () => {
           <ForgotPasswordForm />
         </div>
 
-        <p className="mt-6 text-center text-sm text-gray-600">
+        <p className="mt-6 text-center text-sm text-ink-soft">
           Remembered your password?{" "}
 
           <Link
             to="/login"
-            className="font-medium text-blue-600 hover:underline"
+            className="font-medium text-accent hover:underline"
           >
             Login
           </Link>

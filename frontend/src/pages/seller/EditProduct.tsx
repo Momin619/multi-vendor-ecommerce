@@ -68,7 +68,7 @@ const EditProduct = () => {
   if (!product) {
     return (
       <div className="p-6 text-center">
-        <p className="text-red-600">
+        <p className="text-danger">
           Product could not be found.
         </p>
       </div>
@@ -76,14 +76,14 @@ const EditProduct = () => {
   }
 
  return (
-  <div className="min-h-screen bg-gray-100 p-4 sm:p-6">
+  <div className="min-h-screen bg-paper p-4 sm:p-6">
     <div className="mx-auto max-w-2xl">
-      <div className="rounded-xl bg-white p-5 shadow sm:p-8">
-        <h1 className="text-2xl font-bold">
+      <div className="rounded-md border border-border bg-surface p-5 sm:p-8">
+        <h1 className="font-display text-2xl font-semibold text-ink">
           Edit Product
         </h1>
 
-        <p className="mt-2 text-sm text-gray-500">
+        <p className="mt-2 text-sm text-ink-soft">
           Update your product information.
         </p>
 

@@ -29,19 +29,20 @@ const Button = ({
         justify-center
         cursor-pointer
         gap-2
-        rounded-lg
-        bg-blue-600
+        rounded-md
+        bg-accent
         px-4
         py-2.5
         text-sm
         font-medium
-        text-white
+        text-accent-ink
         transition
-        hover:bg-blue-700
+        hover:bg-accent-dark
         focus:outline-none
         focus:ring-2
-        focus:ring-blue-500
+        focus:ring-accent
         focus:ring-offset-1
+        focus:ring-offset-paper
         disabled:cursor-not-allowed
         disabled:opacity-60
         sm:w-auto

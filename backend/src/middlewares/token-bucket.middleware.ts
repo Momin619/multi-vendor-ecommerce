@@ -10,12 +10,20 @@ interface TokenBucketOptions {
     refillRate: number;
 }
 
+/**
+ * Every bucket Map created by tokenBucketRateLimit(), so tests can
+ * clear all of them between cases without restarting the process.
+ * Never read from in the request path.
+ */
+const allBuckets: Map<string, Bucket>[] = [];
+
 export function tokenBucketRateLimit(
     options: TokenBucketOptions
 ) {
     const { capacity, refillRate } = options;
 
     const buckets = new Map<string, Bucket>();
+    allBuckets.push(buckets);
 
     return (req: Request, res: Response, next: NextFunction) => {
         const clientId = req.ip;
@@ -102,3 +110,12 @@ export const resetPasswordLimiter = tokenBucketRateLimit({
   capacity: 8,
   refillRate: 8 / (10 * 60),
 });
+
+/**
+ * Test-only: clears every rate-limit bucket so test cases don't
+ * leak request counts into one another. The running application
+ * never calls this.
+ */
+export const resetRateLimitBucketsForTests = (): void => {
+  allBuckets.forEach((buckets) => buckets.clear());
+};

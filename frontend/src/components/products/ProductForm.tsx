@@ -248,7 +248,7 @@ const ProductForm = ({
 
       {/* Product image upload */}
       <div>
-        <label className="mb-2 block text-sm font-medium text-gray-700">
+        <label className="mb-2 block text-sm font-medium text-ink">
           Product Image
         </label>
 
@@ -257,7 +257,7 @@ const ProductForm = ({
             <img
               src={previewUrl}
               alt="Product preview"
-              className="h-40 w-40 rounded-xl object-cover ring-1 ring-gray-200"
+              className="h-40 w-40 rounded-md object-cover ring-1 ring-border"
             />
 
             <button
@@ -274,11 +274,11 @@ const ProductForm = ({
                 items-center
                 justify-center
                 rounded-full
-                bg-gray-900
-                text-white
+                bg-ink
+                text-paper
                 shadow
                 transition
-                hover:bg-red-600
+                hover:bg-danger
               "
             >
               <FiX className="h-4 w-4" />
@@ -296,16 +296,16 @@ const ProductForm = ({
               items-center
               justify-center
               gap-2
-              rounded-xl
+              rounded-md
               border-2
               border-dashed
-              border-gray-300
-              bg-gray-50
-              text-gray-500
+              border-border
+              bg-paper
+              text-ink-soft
               transition
-              hover:border-blue-400
-              hover:bg-blue-50
-              hover:text-blue-600
+              hover:border-accent
+              hover:bg-accent-soft
+              hover:text-accent-ink
               sm:w-64
             "
           >
@@ -313,7 +313,7 @@ const ProductForm = ({
             <span className="text-sm font-medium">
               Click to upload an image
             </span>
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-ink-soft">
               JPG, PNG, or WEBP — up to 5MB
             </span>
 
@@ -328,14 +328,14 @@ const ProductForm = ({
         )}
 
         {imageError && (
-          <p className="mt-2 text-sm text-red-600">
+          <p className="mt-2 text-sm text-danger">
             {imageError}
           </p>
         )}
       </div>
 
       {errors.root?.message && (
-        <p className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
+        <p className="rounded-md bg-danger-soft p-3 text-sm text-danger">
           {errors.root.message}
         </p>
       )}

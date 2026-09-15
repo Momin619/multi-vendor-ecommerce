@@ -1,4 +1,13 @@
-import "dotenv/config";
+import dotenv from "dotenv";
+
+/**
+ * Tests set NODE_ENV=test before this module is imported (see
+ * tests/setup.ts), so they load `.env.test` instead of `.env` and
+ * never touch the real database or send real emails.
+ */
+dotenv.config({
+  path: process.env.NODE_ENV === "test" ? ".env.test" : ".env",
+});
 
 /**
  * Returns an environment variable or throws an error

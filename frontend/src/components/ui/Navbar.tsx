@@ -12,10 +12,10 @@ const Navbar = () => {
   }: {
     isActive: boolean;
   }) =>
-    `block rounded-lg px-4 py-2 text-sm font-medium transition ${
+    `block border-b-2 px-1 py-2 text-sm font-medium transition ${
       isActive
-        ? "bg-gray-100 text-blue-600"
-        : "text-gray-700 hover:bg-gray-50 hover:text-blue-600"
+        ? "border-accent text-ink"
+        : "border-transparent text-ink-soft hover:border-border hover:text-ink"
     }`;
 
   const handleLinkClick = () => {
@@ -23,15 +23,15 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="border-b bg-white">
+    <nav className="border-b border-border bg-paper">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
         {/* Logo / Brand */}
         <NavLink
           to="/"
-          className="text-lg font-bold text-gray-900"
+          className="font-display text-lg font-semibold tracking-tight text-ink"
           onClick={handleLinkClick}
         >
-          E-Commerce
+          Market Ledger
         </NavLink>
 
         {/* Desktop Navigation */}
@@ -123,7 +123,7 @@ const Navbar = () => {
           onClick={() =>
             setIsMenuOpen((previous) => !previous)
           }
-          className="rounded-lg p-2 text-gray-700 hover:bg-gray-100 md:hidden"
+          className="rounded-md p-2 text-ink hover:bg-accent-soft md:hidden"
           aria-label={
             isMenuOpen ? "Close menu" : "Open menu"
           }
@@ -139,7 +139,7 @@ const Navbar = () => {
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="border-t bg-white px-4 py-3 md:hidden">
+        <div className="border-t border-border bg-paper px-4 py-3 md:hidden">
           <div className="flex flex-col gap-1">
             {isAuthenticated && user ? (
               <>

@@ -20,7 +20,7 @@ const Login = () => {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-100">
+      <div className="flex min-h-screen items-center justify-center bg-paper">
         <LoadingSpinner />
       </div>
     );
@@ -40,26 +40,26 @@ if (isAuthenticated && user) {
 }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
-      <div className="w-full max-w-md rounded-xl bg-white p-8 shadow">
-        <h1 className="text-2xl font-bold text-gray-900">
-          Login
+    <div className="flex min-h-screen items-center justify-center bg-paper px-4 py-10">
+      <div className="w-full max-w-md rounded-md border border-border bg-surface p-8">
+        <h1 className="font-display text-2xl font-semibold text-ink">
+          Welcome back
         </h1>
 
-        <p className="mt-2 text-sm text-gray-500">
-          Login to your account
+        <p className="mt-2 text-sm text-ink-soft">
+          Log in to your account
         </p>
 
         <div className="mt-6">
           <LoginForm />
         </div>
 
-        <p className="mt-6 text-center text-sm text-gray-600">
+        <p className="mt-6 text-center text-sm text-ink-soft">
           Don't have an account?{" "}
 
           <Link
             to="/register"
-            className="font-medium text-blue-600 hover:underline"
+            className="font-medium text-accent hover:underline"
           >
             Register
           </Link>

@@ -244,7 +244,6 @@ export const forgotPassword = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    console.log(req.body)
     await requestPasswordResetOtp(req.body);
 
     /**

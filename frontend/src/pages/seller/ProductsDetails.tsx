@@ -74,20 +74,20 @@ const ProductDetails = () => {
 
   if (!product) {
     return (
-      <div className="min-h-[70vh] bg-gray-100 p-4 sm:p-6">
+      <div className="min-h-[70vh] bg-paper p-4 sm:p-6">
         <div className="mx-auto max-w-3xl">
-          <div className="rounded-xl bg-white p-6 text-center shadow sm:p-8">
-            <h1 className="text-xl font-semibold text-gray-900">
+          <div className="rounded-md border border-border bg-surface p-6 text-center sm:p-8">
+            <h1 className="font-display text-xl font-semibold text-ink">
               Product Not Found
             </h1>
 
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-2 text-sm text-ink-soft">
               The product could not be loaded.
             </p>
 
             <Link
               to="/seller/products"
-              className="mt-6 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700"
+              className="mt-6 inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2.5 text-sm font-medium text-accent-ink transition hover:bg-accent-dark"
             >
               <FiArrowLeft />
               Back to Products
@@ -99,21 +99,21 @@ const ProductDetails = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 sm:p-6">
+    <div className="min-h-screen bg-paper p-4 sm:p-6">
       <div className="mx-auto max-w-3xl">
         {/* Back */}
         <Link
           to="/seller/products"
-          className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-gray-600 transition hover:text-blue-600"
+          className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-ink-soft transition hover:text-accent"
         >
           <FiArrowLeft />
           Back to Products
         </Link>
 
-        <div className="overflow-hidden rounded-xl bg-white shadow">
+        <div className="overflow-hidden rounded-md border border-border bg-surface">
           {/* Product Image */}
           {product.imageUrl ? (
-            <div className="bg-gray-50">
+            <div className="bg-paper">
               <img
                 src={product.imageUrl}
                 alt={product.name}
@@ -121,7 +121,7 @@ const ProductDetails = () => {
               />
             </div>
           ) : (
-            <div className="flex h-64 items-center justify-center bg-gray-100 text-sm text-gray-400 sm:h-80">
+            <div className="flex h-64 items-center justify-center bg-paper text-sm text-ink-soft sm:h-80">
               No image available
             </div>
           )}
@@ -130,16 +130,16 @@ const ProductDetails = () => {
           <div className="p-5 sm:p-8">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div className="min-w-0">
-                <p className="text-sm font-medium text-blue-600">
+                <p className="text-sm font-medium text-accent">
                   {product.category}
                 </p>
 
-                <h1 className="mt-1 break-words text-2xl font-bold text-gray-900 sm:text-3xl">
+                <h1 className="mt-1 break-words font-display text-2xl font-semibold text-ink sm:text-3xl">
                   {product.name}
                 </h1>
               </div>
 
-              <p className="shrink-0 text-2xl font-bold text-gray-900">
+              <p className="shrink-0 font-display text-2xl font-semibold tabular-nums text-ink">
                 ${product.price.toFixed(2)}
               </p>
             </div>
@@ -147,11 +147,11 @@ const ProductDetails = () => {
             {/* Description */}
             {product.description && (
               <div className="mt-8">
-                <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+                <h2 className="text-sm font-semibold text-ink-soft">
                   Description
                 </h2>
 
-                <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-gray-600">
+                <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-ink-soft">
                   {product.description}
                 </p>
               </div>
@@ -159,22 +159,22 @@ const ProductDetails = () => {
 
             {/* Information */}
             <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div className="rounded-lg bg-gray-50 p-4">
-                <p className="text-sm text-gray-500">
+              <div className="rounded-md border border-border bg-paper p-4">
+                <p className="text-sm text-ink-soft">
                   Stock
                 </p>
 
-                <p className="mt-1 text-lg font-semibold text-gray-900">
+                <p className="mt-1 text-lg font-semibold tabular-nums text-ink">
                   {product.stock}
                 </p>
               </div>
 
-              <div className="rounded-lg bg-gray-50 p-4">
-                <p className="text-sm text-gray-500">
+              <div className="rounded-md border border-border bg-paper p-4">
+                <p className="text-sm text-ink-soft">
                   Category
                 </p>
 
-                <p className="mt-1 text-lg font-semibold text-gray-900">
+                <p className="mt-1 text-lg font-semibold text-ink">
                   {product.category}
                 </p>
               </div>
@@ -184,7 +184,7 @@ const ProductDetails = () => {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
                 to={`/seller/products/${product.id}/edit`}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-3 text-sm font-medium text-white transition hover:bg-blue-700 sm:w-auto"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-accent px-4 py-3 text-sm font-medium text-accent-ink transition hover:bg-accent-dark sm:w-auto"
               >
                 <FiEdit2 />
                 Edit Product
@@ -192,7 +192,7 @@ const ProductDetails = () => {
 
               <Link
                 to="/seller/products"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50 sm:w-auto"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-border px-4 py-3 text-sm font-medium text-ink transition hover:bg-paper sm:w-auto"
               >
                 <FiArrowLeft />
                 Back

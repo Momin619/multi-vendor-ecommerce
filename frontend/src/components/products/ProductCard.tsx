@@ -46,16 +46,13 @@ const ProductCard = ({
         min-w-0
         flex-col
         overflow-hidden
-        rounded-2xl
+        rounded-md
         border
-        border-slate-200
-        bg-white
-        shadow-sm
-        transition-all
+        border-border
+        bg-surface
+        transition-shadow
         duration-300
-        hover:-translate-y-1
-        hover:border-slate-300
-        hover:shadow-xl
+        hover:shadow-md
       "
     >
       {/* Product Image */}
@@ -67,7 +64,7 @@ const ProductCard = ({
           aspect-[4/3]
           w-full
           overflow-hidden
-          bg-slate-100
+          bg-paper
         "
       >
         <img
@@ -84,44 +81,25 @@ const ProductCard = ({
           "
         />
 
-        {/* Image overlay */}
-        <div
-          className="
-            absolute
-            inset-0
-            bg-gradient-to-t
-            from-black/20
-            via-transparent
-            to-transparent
-            opacity-0
-            transition-opacity
-            duration-300
-            group-hover:opacity-100
-          "
-        />
-
-        {/* View badge */}
+        {/* Price tag */}
         <span
           className="
             absolute
-            right-3
-            top-3
-            rounded-full
-            bg-white/90
+            bottom-0
+            left-0
+            rounded-tr-md
+            bg-accent
             px-3
             py-1.5
-            text-xs
-            font-medium
-            text-slate-700
-            opacity-0
-            shadow-sm
-            backdrop-blur-sm
-            transition-all
-            duration-300
-            group-hover:opacity-100
+            font-display
+            text-sm
+            font-semibold
+            tabular-nums
+            text-accent-ink
+            sm:text-base
           "
         >
-          View product
+          ${product.price.toFixed(2)}
         </span>
       </Link>
 
@@ -138,29 +116,12 @@ const ProductCard = ({
                 font-semibold
                 leading-snug
                 tracking-tight
-                text-slate-900s
+                text-ink
                 sm:text-lg
               "
             >
               {product.name}
             </h2>
-
-            <span
-              className="
-                shrink-0
-                rounded-full
-                bg-slate-900
-                px-3
-                py-1.5
-                text-xs
-                font-semibold
-                tabular-nums
-                text-white
-                sm:text-sm
-              "
-            >
-              ${product.price.toFixed(2)}
-            </span>
           </div>
         </div>
 
@@ -173,7 +134,7 @@ const ProductCard = ({
             justify-end
             gap-1
             border-t
-            border-slate-100
+            border-border
             pt-4
           "
         >
@@ -188,15 +149,15 @@ const ProductCard = ({
               w-10
               items-center
               justify-center
-              rounded-xl
-              text-slate-500
+              rounded-md
+              text-ink-soft
               transition-all
               duration-200
-              hover:bg-slate-100
-              hover:text-slate-900
+              hover:bg-paper
+              hover:text-ink
               focus:outline-none
               focus-visible:ring-2
-              focus-visible:ring-slate-900
+              focus-visible:ring-ink
               focus-visible:ring-offset-1
             "
           >
@@ -214,15 +175,15 @@ const ProductCard = ({
               w-10
               items-center
               justify-center
-              rounded-xl
-              text-slate-500
+              rounded-md
+              text-ink-soft
               transition-all
               duration-200
-              hover:bg-blue-50
-              hover:text-blue-600
+              hover:bg-accent-soft
+              hover:text-accent-ink
               focus:outline-none
               focus-visible:ring-2
-              focus-visible:ring-blue-500
+              focus-visible:ring-accent
               focus-visible:ring-offset-1
             "
           >
@@ -242,15 +203,15 @@ const ProductCard = ({
               cursor-pointer
               items-center
               justify-center
-              rounded-xl
-              text-slate-500
+              rounded-md
+              text-ink-soft
               transition-all
               duration-200
-              hover:bg-red-50
-              hover:text-red-600
+              hover:bg-danger-soft
+              hover:text-danger
               focus:outline-none
               focus-visible:ring-2
-              focus-visible:ring-red-500
+              focus-visible:ring-danger
               focus-visible:ring-offset-1
             "
           >

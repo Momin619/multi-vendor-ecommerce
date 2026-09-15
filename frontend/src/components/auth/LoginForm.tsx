@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 import { useAuth } from "../../hooks/useAuth";
 import { useRedirect } from "../../hooks/useRedirect";
@@ -77,6 +77,15 @@ const LoginForm = () => {
         })}
         error={errors.password?.message}
       />
+
+      <div className="flex justify-end">
+        <Link
+          to="/forgot-password"
+          className="text-sm font-medium text-accent hover:underline"
+        >
+          Forgot password?
+        </Link>
+      </div>
 
      <div className="flex justify-center">
   <Button
