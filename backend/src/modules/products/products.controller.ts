@@ -28,8 +28,6 @@ export const createProduct = async (
   res: Response,
   next: NextFunction,
 ): Promise<void> => {
-  
-
   try {
     const product = await createProductService(
       req.user!.userId,
